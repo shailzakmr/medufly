@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>University Application Website - Database Schema</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 960px; margin: 40px auto; padding: 0 24px; color: #1a1a2e; background: #f8f9fa; }
+    h1 { color: #0f3460; border-bottom: 3px solid #e94560; padding-bottom: 12px; }
+    h2 { color: #0f3460; margin-top: 40px; }
+    h3 { color: #16213e; margin-top: 28px; background: #e8f0fe; padding: 8px 14px; border-left: 4px solid #0f3460; border-radius: 0 6px 6px 0; }
+    p.note { background: #fff8e1; border-left: 4px solid #f9a825; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 0.92em; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    th { background: #0f3460; color: #fff; text-align: left; padding: 10px 14px; font-size: 0.9em; }
+    td { padding: 9px 14px; font-size: 0.88em; border-bottom: 1px solid #eee; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f0f4ff; }
+    td:first-child { font-family: monospace; font-size: 0.9em; color: #c0392b; font-weight: 600; }
+    .tag-pk  { background: #d4edda; color: #155724; padding: 2px 7px; border-radius: 4px; font-size: 0.78em; font-weight: 700; }
+    .tag-fk  { background: #cce5ff; color: #004085; padding: 2px 7px; border-radius: 4px; font-size: 0.78em; font-weight: 700; }
+    .tag-new { background: #fff3cd; color: #856404; padding: 2px 7px; border-radius: 4px; font-size: 0.78em; font-weight: 700; margin-left: 6px; }
+    .method-get  { background: #28a745; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 700; }
+    .method-post { background: #007bff; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 700; }
+    hr { border: none; border-top: 1px solid #dde3f0; margin: 32px 0; }
+    .overview-box { background: #fff; border: 1px solid #dde3f0; border-radius: 8px; padding: 20px 24px; margin-bottom: 32px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .overview-box p { margin: 6px 0; }
+  </style>
+</head>
+<body>
+
+<h1>University Application Website &mdash; Database Schema</h1>
+
+<div class="overview-box">
+  <p>Database schema design for a university application website where students can:</p>
+  <p>&#x2022; Browse and apply to universities by country</p>
+  <p>&#x2022; Raise enquiries for platform services (Visa Assistance, Scholarship Guidance, University Counselling, etc.)</p>
+  <p>&#x2022; Submit reviews and general feedback</p>
+</div>
+
+<h2>Tables</h2>
+
+<h3>1. countries</h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>country_id</td><td>INT</td><td><span class="tag-pk">PK</span> AUTO_INCREMENT</td><td>Unique country identifier</td></tr>
+  <tr><td>name</td><td>VARCHAR(100)</td><td>NOT NULL</td><td>Country name</td></tr>
+  <tr><td>code</td><td>CHAR(2)</td><td>NOT NULL, UNIQUE</td><td>ISO country code (e.g. IN, UK)</td></tr>
+</table>
+
+<h3>2. universities</h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>university_id</td><td>INT</td><td><span class="tag-pk">PK</span> AUTO_INCREMENT</td><td>Unique university identifier</td></tr>
+  <tr><td>name</td><td>VARCHAR(200)</td><td>NOT NULL</td><td>University name</td></tr>
+  <tr><td>location</td><td>VARCHAR(200)</td><td>NOT NULL</td><td>City/region</td></tr>
+  <tr><td>image_url</td><td>TEXT</td><td></td><td>Banner/logo image URL</td></tr>
+  <tr><td>description</td><td>TEXT</td><td></td><td>University description</td></tr>
+  <tr><td>country_id</td><td>INT</td><td><span class="tag-fk">FK</span> &rarr; countries</td><td>Country the university belongs to</td></tr>
+  <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td>Record creation time</td></tr>
+</table>
+
+<h3>3. services</h3>
+<p class="note">Platform-level service catalogue. Examples: Visa Assistance, Scholarship Guidance, University Counselling. Services exist independently &mdash; students raise enquiries against them via the <strong>enquiries</strong> table.</p>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>service_id</td><td>INT</td><td><span class="tag-pk">PK</span> AUTO_INCREMENT</td><td>Unique service identifier</td></tr>
+  <tr><td>name</td><td>VARCHAR(100)</td><td>NOT NULL</td><td>Service name (e.g. Visa Assistance)</td></tr>
+  <tr><td>content</td><td>TEXT</td><td>NOT NULL</td><td>Service description</td></tr>
+</table>
+
+<h3>4. students</h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>student_id</td><td>INT</td><td><span class="tag-pk">PK</span> AUTO_INCREMENT</td><td>Unique student identifier</td></tr>
+  <tr><td>name</td><td>VARCHAR(100)</td><td>NOT NULL</td><td>Student full name</td></tr>
+  <tr><td>email</td><td>VARCHAR(150)</td><td>NOT NULL, UNIQUE</td><td>Student email address</td></tr>
+  <tr><td>phone</td><td>VARCHAR(20)</td><td></td><td>Contact phone number</td></tr>
+  <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td>Record creation time</td></tr>
+</table>
+
+<h3>5. enquiries <span class="tag-new">NEW</span></h3>
+<p class="note">Junction table linking students to services. A student can raise enquiries for multiple services; a service can receive enquiries from many students.</p>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>enquiry_id</td><td>INT</td><td><span class="tag-pk">PK</span> AUTO_INCREMENT</td><td>Unique enquiry identifier</td></tr>
+  <tr><td>student_id</td><td>INT</td><td><span class="tag-fk">FK</span> &rarr; students</td><td>Student raising the enquiry</td></tr>
+  <tr><td>service_id</td><td>INT</td><td><span class="tag-fk">FK</span> &rarr; services</td><td>Service being enquired about</td></tr>
+  <tr><td>message</td><td>TEXT</td><td>NOT NULL</td><td>Student's specific question or request</td></tr>
+  <tr><td>status</td><td>ENUM</td><td>open / in_progress / resolved</td><td>Enquiry handling status</td></tr>
+  <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td>Enquiry submission time</td></tr>
+</table>
+
+<h3>6. applications</h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>application_id</td><td>INT</td><td><span class="tag-pk">PK</span> AUTO_INCREMENT</td><td>Unique application identifier</td></tr>
+  <tr><td>student_id</td><td>INT</td><td><span class="tag-fk">FK</span> &rarr; students</td><td>Applying student</td></tr>
+  <tr><td>university_id</td><td>INT</td><td><span class="tag-fk">FK</span> &rarr; universities</td><td>Target university</td></tr>
+  <tr><td>status</td><td>ENUM</td><td>pending / accepted / rejected</td><td>Application status</td></tr>
+  <tr><td>applied_at</td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td>Application submission time</td></tr>
+</table>
+
+<h3>7. reviews</h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>review_id</td><td>INT</td><td><span class="tag-pk">PK</span> AUTO_INCREMENT</td><td>Unique review identifier</td></tr>
+  <tr><td>content</td><td>TEXT</td><td>NOT NULL</td><td>Review text</td></tr>
+  <tr><td>rating</td><td>INT</td><td>CHECK (1&ndash;5)</td><td>Numeric rating</td></tr>
+  <tr><td>student_id</td><td>INT</td><td><span class="tag-fk">FK</span> &rarr; students</td><td>Reviewer</td></tr>
+  <tr><td>university_id</td><td>INT</td><td><span class="tag-fk">FK</span> &rarr; universities</td><td>Reviewed university</td></tr>
+  <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td>Review submission time</td></tr>
+</table>
+
+<h3>8. feedback</h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>feedback_id</td><td>INT</td><td><span class="tag-pk">PK</span> AUTO_INCREMENT</td><td>Unique feedback identifier</td></tr>
+  <tr><td>content</td><td>TEXT</td><td>NOT NULL</td><td>Feedback text</td></tr>
+  <tr><td>student_id</td><td>INT</td><td><span class="tag-fk">FK</span> &rarr; students</td><td>Student who submitted feedback</td></tr>
+  <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td>Submission time</td></tr>
+</table>
+
+<hr />
+
+<h2>Table Relationships</h2>
+<table>
+  <tr><th>Relationship</th><th>Type</th><th>Via</th></tr>
+  <tr><td>country &rarr; universities</td><td>One-to-Many</td><td>universities.country_id</td></tr>
+  <tr><td>student &rarr; applications</td><td>One-to-Many</td><td>applications.student_id</td></tr>
+  <tr><td>university &rarr; applications</td><td>One-to-Many</td><td>applications.university_id</td></tr>
+  <tr><td>student &harr; services</td><td>Many-to-Many</td><td>enquiries (junction table)</td></tr>
+  <tr><td>student &rarr; reviews</td><td>One-to-Many</td><td>reviews.student_id</td></tr>
+  <tr><td>university &rarr; reviews</td><td>One-to-Many</td><td>reviews.university_id</td></tr>
+  <tr><td>student &rarr; feedback</td><td>One-to-Many</td><td>feedback.student_id</td></tr>
+</table>
+
+<hr />
+
+<h2>API Endpoints Summary</h2>
+<table>
+  <tr><th>#</th><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+  <tr><td>1</td><td><span class="method-get">GET</span></td><td>/page?country_id={id}</td><td>Page load &mdash; universities, services, reviews</td></tr>
+  <tr><td>2</td><td><span class="method-get">GET</span></td><td>/universities/{id}</td><td>University details</td></tr>
+  <tr><td>3</td><td><span class="method-post">POST</span></td><td>/applications</td><td>Apply to a university</td></tr>
+  <tr><td>4</td><td><span class="method-post">POST</span></td><td>/enquiries</td><td>Submit a service enquiry (student + service + message)</td></tr>
+  <tr><td>5</td><td><span class="method-post">POST</span></td><td>/reviews</td><td>Submit a university review</td></tr>
+  <tr><td>6</td><td><span class="method-post">POST</span></td><td>/feedback</td><td>Submit general feedback</td></tr>
+  <tr><td>7</td><td><span class="method-get">GET</span></td><td>/universities/{id}/reviews</td><td>Reviews for one university</td></tr>
+</table>
+
+</body>
+</html>
