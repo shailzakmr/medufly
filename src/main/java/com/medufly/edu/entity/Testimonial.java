@@ -19,6 +19,8 @@ public class Testimonial {
     private String year;
     private Integer rating;
 
+    private String photoUrl;
+
     @Column(columnDefinition = "TEXT")
     private String quote;
 
